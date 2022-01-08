@@ -4,6 +4,7 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const createServer = require('../createServer');
 const container = require('../../container');
 const ServerTestHelper = require('../../../../tests/ServerTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 
 describe('/threads endpoint', () => {
   afterAll(async () => {
@@ -129,8 +130,11 @@ describe('/threads endpoint', () => {
 
       const server = await createServer(container);
 
-      const { userId } = await ServerTestHelper.newUser(server, {});
-      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+      const { userId: user0 } = await ServerTestHelper.newUser(server, {});
+      const { userId: user1 } = await ServerTestHelper.newUser(server, { username: 'johndoe', fullName: 'John Doe' });
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: user0 });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId, owner: user0 });
+      await CommentsTableTestHelper.addComment({ id: 'comment-124', threadId, owner: user1 });
 
       // Action
       const response = await server.inject({
@@ -143,6 +147,7 @@ describe('/threads endpoint', () => {
       expect(response.statusCode).toEqual(200);
       expect(responseJson.status).toEqual('success');
       expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread.comments).toHaveLength(2);
     });
 
     it('should response 404 when thread is not found', async () => {
