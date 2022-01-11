@@ -4,3 +4,4 @@ package-lock.json
 config/database/test.json
 coverage
 .env
+forum-api-app-server.pem
