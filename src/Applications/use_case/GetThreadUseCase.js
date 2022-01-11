@@ -1,16 +1,23 @@
 /* eslint-disable no-param-reassign */
 class GetThreadUseCase {
-  constructor({ threadRepository, commentRepository }) {
+  constructor({ threadRepository, commentRepository, replyRepository }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
+    this._replyRepository = replyRepository;
   }
 
   async execute(useCaseParams) {
     const { threadId } = useCaseParams;
+
     const thread = await this._threadRepository.getThreadById(threadId);
     const comments = await this._commentRepository.getCommentsByThreadId(threadId);
+    const replies = await this._replyRepository.getRepliesByThreadId(threadId);
 
-    thread.comments = this._reformatDeletedComments(comments);
+    const reformattedComments = this._reformatDeletedComments(comments);
+    const reformattedReplies = this._reformatDeletedReplies(replies);
+    const repliedComments = this._putRepliesToComments(reformattedReplies, reformattedComments);
+
+    thread.comments = repliedComments;
     return thread;
   }
 
@@ -18,6 +25,26 @@ class GetThreadUseCase {
     return comments.map((comment) => {
       comment.content = comment.isDeleted ? '**komentar telah dihapus**' : comment.content;
       delete comment.isDeleted;
+      return comment;
+    });
+  }
+
+  _reformatDeletedReplies(replies) {
+    return replies.map((reply) => {
+      reply.content = reply.isDeleted ? '**balasan telah dihapus**' : reply.content;
+      delete reply.isDeleted;
+      return reply;
+    });
+  }
+
+  _putRepliesToComments(replies, comments) {
+    return comments.map((comment) => {
+      comment.replies = replies
+        .filter(((reply) => reply.commentId === comment.id))
+        .map((reply) => {
+          delete reply.commentId;
+          return reply;
+        });
       return comment;
     });
   }
