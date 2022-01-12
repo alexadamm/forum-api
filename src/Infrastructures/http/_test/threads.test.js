@@ -9,6 +9,8 @@ const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper
 const LikesTableTestHelper = require('../../../../tests/LikesTableTestHelper');
 
 describe('/threads endpoint', () => {
+  beforeAll(() => jest.setTimeout(50000));
+
   afterAll(async () => {
     await pool.end();
   });

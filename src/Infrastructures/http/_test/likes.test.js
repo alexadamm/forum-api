@@ -8,6 +8,8 @@ const createServer = require('../createServer');
 const container = require('../../container');
 
 describe('/threads/{threadId}/comments/{commentId}/likes endpoint', () => {
+  beforeAll(() => jest.setTimeout(50000));
+
   afterAll(async () => {
     await pool.end();
   });
