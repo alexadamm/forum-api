@@ -5,6 +5,7 @@ const CommentDetails = require('../../../Domains/comments/entities/CommentDetail
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ReplyDetails = require('../../../Domains/replies/entities/ReplyDetails');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
+const LikeRepository = require('../../../Domains/likes/LikeRepository');
 
 describe('GetThreadUseCase', () => {
   describe('execute function', () => {
@@ -86,7 +87,7 @@ describe('GetThreadUseCase', () => {
                 username: 'dicoding',
               },
             ],
-            likeCount: 0,
+            likeCount: 4,
           },
           {
             id: 'comment-124',
@@ -116,6 +117,7 @@ describe('GetThreadUseCase', () => {
       const mockThreadRepository = new ThreadRepository();
       const mockCommentRepository = new CommentRepository();
       const mockReplyRepository = new ReplyRepository();
+      const mockLikeRepository = new LikeRepository();
 
       /** mocking needed function */
       mockThreadRepository.getThreadById = jest.fn()
@@ -124,18 +126,27 @@ describe('GetThreadUseCase', () => {
         .mockImplementation(() => Promise.resolve(expectedComments));
       mockReplyRepository.getRepliesByThreadId = jest.fn()
         .mockImplementation(() => Promise.resolve(expectedReplies));
+      mockLikeRepository.getLikesByCommentId = jest.fn()
+        .mockImplementation((commentId) => Promise.resolve(commentId === 'comment-123' ? [
+          { username: 'dicoding' },
+          { username: 'johndoe' },
+          { username: 'richard' },
+          { username: 'robert' },
+        ] : []));
 
       /** creating use case instance */
       const getThreadUseCase = new GetThreadUseCase({
         threadRepository: mockThreadRepository,
         commentRepository: mockCommentRepository,
         replyRepository: mockReplyRepository,
+        likeRepository: mockLikeRepository,
       });
 
       /** spy needed function */
       const SpyReformatDeletedComments = jest.spyOn(getThreadUseCase, '_reformatDeletedComments');
       const SpyReformatDeletedReplies = jest.spyOn(getThreadUseCase, '_reformatDeletedReplies');
       const SpyPutRepliesToComments = jest.spyOn(getThreadUseCase, '_putRepliesToComments');
+      const SpyPutLikeCountToComments = jest.spyOn(getThreadUseCase, '_putLikeCountToComments');
 
       // Action
       const threadDetails = await getThreadUseCase.execute(useCaseParams);
@@ -148,6 +159,7 @@ describe('GetThreadUseCase', () => {
       expect(SpyReformatDeletedComments).toHaveBeenCalledWith(expectedComments);
       expect(SpyReformatDeletedReplies).toHaveBeenCalledWith(expectedReplies);
       expect(SpyPutRepliesToComments).toHaveBeenCalled();
+      expect(SpyPutLikeCountToComments).toHaveBeenCalled();
     });
   });
 
@@ -194,6 +206,7 @@ describe('GetThreadUseCase', () => {
         threadRepository: {},
         commentRepository: {},
         replyRepository: {},
+        likeRepository: {},
       });
 
       // Action
@@ -252,6 +265,7 @@ describe('GetThreadUseCase', () => {
         threadRepository: {},
         commentRepository: {},
         replyRepository: {},
+        likeRepository: {},
       });
 
       // Action
@@ -370,6 +384,7 @@ describe('GetThreadUseCase', () => {
         threadRepository: {},
         commentRepository: {},
         replyRepository: {},
+        likeRepository: {},
       });
 
       // Action
@@ -378,6 +393,90 @@ describe('GetThreadUseCase', () => {
 
       // Assert
       expect(repliedComments).toEqual(expectedComments);
+    });
+  });
+
+  describe('_putLikeCountToComments', () => {
+    it('should return comments with their number of likes', async () => {
+      // Arrange
+      const formattedComments = [
+        {
+          id: 'comment-123',
+          username: 'dicoding',
+          date: '2021',
+          content: '**komentar telah dihapus**',
+          replies: [],
+          likeCount: 0,
+        },
+        {
+          id: 'comment-124',
+          username: 'johndoe',
+          date: '2022',
+          content: 'second comment',
+          replies: [],
+          likeCount: 0,
+        },
+        {
+          id: 'comment-125',
+          username: 'johndoe',
+          date: '2022',
+          content: '**komentar telah dihapus**',
+          replies: [],
+          likeCount: 0,
+        },
+      ];
+      const expectedLikedComments = [
+        {
+          ...formattedComments[0], likeCount: 3,
+        },
+        {
+          ...formattedComments[1], likeCount: 0,
+        },
+        {
+          ...formattedComments[2], likeCount: 5,
+        },
+      ];
+
+      /** creating dependency of use case */
+      const mockLikeRepository = new LikeRepository();
+
+      /** mocking needed functions */
+      mockLikeRepository.getLikesByCommentId = jest.fn()
+        .mockImplementation((commentId) => {
+          switch (commentId) {
+            case 'comment-123':
+              return Promise.resolve([
+                { username: 'dicoding' },
+                { username: 'johndoe' },
+                { username: 'richard' },
+              ]);
+            case 'comment-125':
+              return Promise.resolve([
+                { username: 'dicoding' },
+                { username: 'johndoe' },
+                { username: 'foo' },
+                { username: 'richard' },
+                { username: 'barney' },
+              ]);
+            default:
+              return Promise.resolve([]);
+          }
+        });
+
+      /** creating use case instance */
+      const getThreadUseCase = new GetThreadUseCase({
+        threadRepository: {},
+        commentRepository: {},
+        replyRepository: {},
+        likeRepository: mockLikeRepository,
+      });
+
+      // Action
+      const likedComments = await getThreadUseCase._putLikeCountToComments(formattedComments);
+
+      // Assert
+      expect(likedComments).toStrictEqual(expectedLikedComments);
+      expect(mockLikeRepository.getLikesByCommentId).toBeCalledTimes(3);
     });
   });
 });

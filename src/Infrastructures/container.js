@@ -19,6 +19,8 @@ const CommentRepository = require('../Domains/comments/CommentRepository');
 const CommentRepositoryPostgres = require('./repository/CommentRepositoryPostgres');
 const ReplyRepositoryPostgres = require('./repository/ReplyRepositoryPostgres');
 const ReplyRepository = require('../Domains/replies/ReplyRepository');
+const LikeRepositoryPostgres = require('./repository/LikeRepositoryPostgres');
+const LikeRepository = require('../Domains/likes/LikeRepository');
 
 // use case
 const AddUserUseCase = require('../Applications/use_case/AddUserUseCase');
@@ -35,6 +37,7 @@ const AddCommentUseCase = require('../Applications/use_case/AddCommentUseCase');
 const DeleteCommentUseCase = require('../Applications/use_case/DeleteCommentUseCase');
 const AddReplyUseCase = require('../Applications/use_case/AddReplyUseCase');
 const DeleteReplyUseCase = require('../Applications/use_case/DeleteReplyUseCase');
+const AddDeleteLikeUseCase = require('../Applications/use_case/AddDeleteLikeUseCase');
 
 // creating container
 const container = createContainer();
@@ -97,6 +100,20 @@ container.register([
   {
     key: ReplyRepository.name,
     Class: ReplyRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: LikeRepository.name,
+    Class: LikeRepositoryPostgres,
     parameter: {
       dependencies: [
         {
@@ -237,6 +254,10 @@ container.register([
           name: 'replyRepository',
           internal: ReplyRepository.name,
         },
+        {
+          name: 'likeRepository',
+          internal: LikeRepository.name,
+        },
       ],
     },
   },
@@ -296,6 +317,23 @@ container.register([
         {
           name: 'replyRepository',
           internal: ReplyRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: AddDeleteLikeUseCase.name,
+    Class: AddDeleteLikeUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'likeRepository',
+          internal: LikeRepository.name,
+        },
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
         },
       ],
     },

@@ -7,6 +7,8 @@ const container = require('../../container');
 const ServerTestHelper = require('../../../../tests/ServerTestHelper');
 
 describe('/threads/{threadId}/comments endpoint', () => {
+  beforeAll(() => jest.setTimeout(50000));
+
   afterAll(async () => {
     await pool.end();
   });

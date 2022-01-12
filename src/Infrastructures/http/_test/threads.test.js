@@ -6,8 +6,11 @@ const container = require('../../container');
 const ServerTestHelper = require('../../../../tests/ServerTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
+const LikesTableTestHelper = require('../../../../tests/LikesTableTestHelper');
 
 describe('/threads endpoint', () => {
+  beforeAll(() => jest.setTimeout(50000));
+
   afterAll(async () => {
     await pool.end();
   });
@@ -138,6 +141,8 @@ describe('/threads endpoint', () => {
       await CommentsTableTestHelper.addComment({ id: 'comment-124', threadId, owner: user1 });
       await RepliesTableTestHelper.addReply({ id: 'reply-123', commentId: 'comment-123', owner: user0 });
       await RepliesTableTestHelper.addReply({ id: 'reply-124', commentId: 'comment-124', owner: user1 });
+      await LikesTableTestHelper.addLike({ id: 'like-123', commentId: 'comment-124', userId: user0 });
+      await LikesTableTestHelper.addLike({ id: 'like-124', commentId: 'comment-124', userId: user1 });
 
       // Action
       const response = await server.inject({
@@ -153,6 +158,7 @@ describe('/threads endpoint', () => {
       expect(responseJson.data.thread.comments).toHaveLength(2);
       expect(responseJson.data.thread.comments[0].replies).toHaveLength(1);
       expect(responseJson.data.thread.comments[1].replies).toHaveLength(1);
+      expect(responseJson.data.thread.comments[1].likeCount).toEqual(2);
     });
 
     it('should response 404 when thread is not found', async () => {
