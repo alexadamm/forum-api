@@ -44,6 +44,15 @@ describe('GetThreadUseCase', () => {
           likeCount: 0,
           isDeleted: false,
         }),
+        new CommentDetails({
+          id: 'comment-125',
+          username: 'dicoding',
+          date: '2022',
+          content: 'third comment',
+          replies: [],
+          likeCount: 0,
+          isDeleted: true,
+        }),
       ];
       const expectedReplies = [
         new ReplyDetails({
@@ -110,6 +119,14 @@ describe('GetThreadUseCase', () => {
             ],
             likeCount: 0,
           },
+          {
+            id: 'comment-125',
+            username: 'dicoding',
+            date: '2022',
+            content: '**komentar telah dihapus**',
+            replies: [],
+            likeCount: 0,
+          },
         ],
       };
 
@@ -142,7 +159,7 @@ describe('GetThreadUseCase', () => {
         likeRepository: mockLikeRepository,
       });
 
-      /** spy needed function */
+      /** spy needed private function */
       const SpyReformatDeletedComments = jest.spyOn(getThreadUseCase, '_reformatDeletedComments');
       const SpyReformatDeletedReplies = jest.spyOn(getThreadUseCase, '_reformatDeletedReplies');
       const SpyPutRepliesToComments = jest.spyOn(getThreadUseCase, '_putRepliesToComments');
@@ -156,327 +173,11 @@ describe('GetThreadUseCase', () => {
       expect(mockThreadRepository.getThreadById).toBeCalledWith(useCaseParams.threadId);
       expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(useCaseParams.threadId);
       expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(useCaseParams.threadId);
+      expect(mockLikeRepository.getLikesByCommentId).toBeCalledTimes(3);
       expect(SpyReformatDeletedComments).toHaveBeenCalledWith(expectedComments);
       expect(SpyReformatDeletedReplies).toHaveBeenCalledWith(expectedReplies);
       expect(SpyPutRepliesToComments).toHaveBeenCalled();
       expect(SpyPutLikeCountToComments).toHaveBeenCalled();
-    });
-  });
-
-  describe('_reformatDeletedComments function', () => {
-    it('should reformat deleted comments correctly', () => {
-      // Arrange
-      const comments = [
-        new CommentDetails({
-          id: 'comment-123',
-          username: 'dicoding',
-          date: '2021',
-          content: 'first comment',
-          replies: [],
-          likeCount: 0,
-          isDeleted: true,
-        }),
-        new CommentDetails({
-          id: 'comment-124',
-          username: 'johndoe',
-          date: '2022',
-          content: 'second comment',
-          replies: [],
-          likeCount: 0,
-          isDeleted: false,
-        }),
-        new CommentDetails({
-          id: 'comment-125',
-          username: 'johndoe',
-          date: '2022',
-          content: 'third comment',
-          replies: [],
-          likeCount: 0,
-          isDeleted: true,
-        }),
-      ];
-
-      const filteredComments = comments.map((comment) => {
-        const { isDeleted, ...filteredComment } = comment;
-        return filteredComment;
-      });
-
-      /** creating use case instance */
-      const getThreadUseCase = new GetThreadUseCase({
-        threadRepository: {},
-        commentRepository: {},
-        replyRepository: {},
-        likeRepository: {},
-      });
-
-      // Action
-      const reformattedComments = getThreadUseCase._reformatDeletedComments(comments);
-
-      // Assert
-      expect(reformattedComments).toEqual([
-        {
-          ...filteredComments[0], content: '**komentar telah dihapus**',
-        },
-        filteredComments[1],
-        {
-          ...filteredComments[2], content: '**komentar telah dihapus**',
-        },
-      ]);
-    });
-  });
-
-  describe('_reformatDeletedReplies functions', () => {
-    it('should reformat deleted replies correctly', () => {
-      // Arrange
-      const replies = [
-        new ReplyDetails({
-          id: 'reply-123',
-          commentId: 'comment-123',
-          content: 'first reply',
-          date: '2020',
-          username: 'dicoding',
-          isDeleted: true,
-        }),
-        new ReplyDetails({
-          id: 'reply-124',
-          commentId: 'comment-124',
-          content: 'first reply',
-          date: '2020',
-          username: 'johndoe',
-          isDeleted: false,
-        }),
-        new ReplyDetails({
-          id: 'reply-125',
-          commentId: 'comment-124',
-          content: 'second reply',
-          date: '2021',
-          username: 'dicoding',
-          isDeleted: true,
-        }),
-      ];
-
-      const filteredReplies = replies.map((reply) => {
-        const { isDeleted, ...filteredReply } = reply;
-        return filteredReply;
-      });
-
-      /** creating use case instance */
-      const getThreadUseCase = new GetThreadUseCase({
-        threadRepository: {},
-        commentRepository: {},
-        replyRepository: {},
-        likeRepository: {},
-      });
-
-      // Action
-      const reformattedReplies = getThreadUseCase._reformatDeletedReplies(replies);
-
-      // Assert
-      expect(reformattedReplies).toEqual([
-        { ...filteredReplies[0], content: '**balasan telah dihapus**' },
-        filteredReplies[1],
-        { ...filteredReplies[2], content: '**balasan telah dihapus**' },
-      ]);
-    });
-  });
-
-  describe('_putRepliesToComments function', () => {
-    it('should return comments with their replies', () => {
-      // Arrange
-      const formattedComments = [
-        {
-          id: 'comment-123',
-          username: 'dicoding',
-          date: '2021',
-          content: '**komentar telah dihapus**',
-          replies: [],
-          likeCount: 0,
-        },
-        {
-          id: 'comment-124',
-          username: 'johndoe',
-          date: '2022',
-          content: 'second comment',
-          replies: [],
-          likeCount: 0,
-        },
-        {
-          id: 'comment-125',
-          username: 'johndoe',
-          date: '2022',
-          content: '**komentar telah dihapus**',
-          replies: [],
-          likeCount: 0,
-        },
-      ];
-      const formattedReplies = [
-        {
-          id: 'reply-123',
-          commentId: 'comment-123',
-          content: '**balasan telah dihapus**',
-          date: '2021',
-          username: 'dicoding',
-        },
-        {
-          id: 'reply-124',
-          commentId: 'comment-124',
-          content: 'first reply',
-          date: '2022',
-          username: 'johndoe',
-        },
-        {
-          id: 'reply-125',
-          commentId: 'comment-124',
-          content: '**balasan telah dihapus**',
-          date: '2022',
-          username: 'dicoding',
-        },
-      ];
-      const expectedComments = [
-        {
-          id: 'comment-123',
-          username: 'dicoding',
-          date: '2021',
-          content: '**komentar telah dihapus**',
-          replies: [
-            {
-              id: 'reply-123',
-              content: '**balasan telah dihapus**',
-              date: '2021',
-              username: 'dicoding',
-            },
-          ],
-          likeCount: 0,
-        },
-        {
-          id: 'comment-124',
-          username: 'johndoe',
-          date: '2022',
-          content: 'second comment',
-          replies: [
-            {
-              id: 'reply-124',
-              content: 'first reply',
-              date: '2022',
-              username: 'johndoe',
-            },
-            {
-              id: 'reply-125',
-              content: '**balasan telah dihapus**',
-              date: '2022',
-              username: 'dicoding',
-            },
-          ],
-          likeCount: 0,
-        },
-        {
-          id: 'comment-125',
-          username: 'johndoe',
-          date: '2022',
-          content: '**komentar telah dihapus**',
-          replies: [],
-          likeCount: 0,
-        },
-      ];
-
-      /** creating use case instance */
-      const getThreadUseCase = new GetThreadUseCase({
-        threadRepository: {},
-        commentRepository: {},
-        replyRepository: {},
-        likeRepository: {},
-      });
-
-      // Action
-      const repliedComments = getThreadUseCase
-        ._putRepliesToComments(formattedReplies, formattedComments);
-
-      // Assert
-      expect(repliedComments).toEqual(expectedComments);
-    });
-  });
-
-  describe('_putLikeCountToComments', () => {
-    it('should return comments with their number of likes', async () => {
-      // Arrange
-      const formattedComments = [
-        {
-          id: 'comment-123',
-          username: 'dicoding',
-          date: '2021',
-          content: '**komentar telah dihapus**',
-          replies: [],
-          likeCount: 0,
-        },
-        {
-          id: 'comment-124',
-          username: 'johndoe',
-          date: '2022',
-          content: 'second comment',
-          replies: [],
-          likeCount: 0,
-        },
-        {
-          id: 'comment-125',
-          username: 'johndoe',
-          date: '2022',
-          content: '**komentar telah dihapus**',
-          replies: [],
-          likeCount: 0,
-        },
-      ];
-      const expectedLikedComments = [
-        {
-          ...formattedComments[0], likeCount: 3,
-        },
-        {
-          ...formattedComments[1], likeCount: 0,
-        },
-        {
-          ...formattedComments[2], likeCount: 5,
-        },
-      ];
-
-      /** creating dependency of use case */
-      const mockLikeRepository = new LikeRepository();
-
-      /** mocking needed functions */
-      mockLikeRepository.getLikesByCommentId = jest.fn()
-        .mockImplementation((commentId) => {
-          switch (commentId) {
-            case 'comment-123':
-              return Promise.resolve([
-                { username: 'dicoding' },
-                { username: 'johndoe' },
-                { username: 'richard' },
-              ]);
-            case 'comment-125':
-              return Promise.resolve([
-                { username: 'dicoding' },
-                { username: 'johndoe' },
-                { username: 'foo' },
-                { username: 'richard' },
-                { username: 'barney' },
-              ]);
-            default:
-              return Promise.resolve([]);
-          }
-        });
-
-      /** creating use case instance */
-      const getThreadUseCase = new GetThreadUseCase({
-        threadRepository: {},
-        commentRepository: {},
-        replyRepository: {},
-        likeRepository: mockLikeRepository,
-      });
-
-      // Action
-      const likedComments = await getThreadUseCase._putLikeCountToComments(formattedComments);
-
-      // Assert
-      expect(likedComments).toStrictEqual(expectedLikedComments);
-      expect(mockLikeRepository.getLikesByCommentId).toBeCalledTimes(3);
     });
   });
 });

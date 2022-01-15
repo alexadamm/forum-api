@@ -36,7 +36,7 @@ describe('ThreadRepositoryPostgres', () => {
       await threadRepositoryPostgres.addThread(createThread);
 
       // Assert
-      const threads = await ThreadsTableTestHelper.findThreadById('thread-123');
+      const threads = await ThreadsTableTestHelper.findThreadsById('thread-123');
       expect(threads).toHaveLength(1);
     });
 
@@ -75,14 +75,6 @@ describe('ThreadRepositoryPostgres', () => {
 
     it('should return threadDetails correctly', async () => {
       // Arrange
-      const expectedThreadDetails = new ThreadDetails({
-        id: 'thread-123',
-        title: 'thread-123',
-        body: 'Sebuah Utas',
-        date: '2022',
-        username: 'dicoding',
-        comments: [],
-      });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {}, {});
       const threadId = 'thread-123';
       await ThreadsTableTestHelper.addThread({
@@ -96,12 +88,10 @@ describe('ThreadRepositoryPostgres', () => {
       const threadDetails = await threadRepositoryPostgres.getThreadById(threadId);
 
       // Arrange
-      expect(threadDetails.id).toEqual(expectedThreadDetails.id);
-      expect(threadDetails.title).toEqual(expectedThreadDetails.title);
-      expect(threadDetails.body).toEqual(expectedThreadDetails.body);
-      expect(threadDetails.username).toEqual(expectedThreadDetails.username);
-      expect(threadDetails.comments).toEqual(expectedThreadDetails.comments);
       expect(threadDetails.date).toBeDefined();
+      expect(threadDetails).toStrictEqual(new ThreadDetails({
+        id: 'thread-123', title: 'thread-123', body: 'Sebuah Utas', date: threadDetails.date, username: 'dicoding', comments: [],
+      }));
     });
   });
 });

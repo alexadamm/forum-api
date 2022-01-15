@@ -43,7 +43,7 @@ describe('ReplyRepositoryPostgres', () => {
       await replyRepositoryPostgres.addReply(createReply);
 
       // Assert
-      const replies = await RepliesTableTestHelper.findReplyById('reply-123');
+      const replies = await RepliesTableTestHelper.findRepliesById('reply-123');
       expect(replies).toHaveLength(1);
     });
 
@@ -130,7 +130,7 @@ describe('ReplyRepositoryPostgres', () => {
       await replyRepositoryPostgres.deleteReplyById('reply-123');
 
       // Assert
-      const replies = await RepliesTableTestHelper.findReplyById('reply-123');
+      const replies = await RepliesTableTestHelper.findRepliesById('reply-123');
       expect(replies[0].is_deleted).toEqual(true);
     });
   });
