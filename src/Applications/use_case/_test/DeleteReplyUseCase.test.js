@@ -18,12 +18,9 @@ describe('DeleteReplyUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     /** mocking needed function */
-    mockReplyRepository.verifyReplyExistance = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.verifyReplyAccessibility = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.deleteReplyById = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockReplyRepository.verifyReplyExistence = jest.fn(() => Promise.resolve());
+    mockReplyRepository.verifyReplyAccessibility = jest.fn(() => Promise.resolve());
+    mockReplyRepository.deleteReplyById = jest.fn(() => Promise.resolve());
 
     /** creating use case instance */
     const deleteReplyUseCase = new DeleteReplyUseCase({
@@ -34,7 +31,7 @@ describe('DeleteReplyUseCase', () => {
     await deleteReplyUseCase.execute(useCaseParams, userId);
 
     // Assert
-    expect(mockReplyRepository.verifyReplyExistance).toBeCalledWith(useCaseParams);
+    expect(mockReplyRepository.verifyReplyExistence).toBeCalledWith(useCaseParams);
     expect(mockReplyRepository.verifyReplyAccessibility)
       .toBeCalledWith({ replyId: 'reply-123', userId });
     expect(mockReplyRepository.deleteReplyById).toBeCalledWith('reply-123');

@@ -27,15 +27,13 @@ class RepliesHandler {
     return response;
   }
 
-  async deleteReplyByIdHandler(request, h) {
+  async deleteReplyByIdHandler(request) {
     const deleteReplyUseCase = this._container.getInstance(DeleteReplyUseCase.name);
     await deleteReplyUseCase.execute(request.params, request.auth.credentials.id);
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 

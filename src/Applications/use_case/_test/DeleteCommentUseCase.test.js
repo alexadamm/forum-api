@@ -17,12 +17,9 @@ describe('DeleteCommentUseCase', () => {
     const mockCommentRepository = new CommentRepository();
 
     /** mocking needed function */
-    mockCommentRepository.verifyCommentExistance = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.verifyCommentAccessibility = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.deleteCommentById = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockCommentRepository.verifyCommentExistence = jest.fn(() => Promise.resolve());
+    mockCommentRepository.verifyCommentAccessibility = jest.fn(() => Promise.resolve());
+    mockCommentRepository.deleteCommentById = jest.fn(() => Promise.resolve());
 
     /** creating use case instance */
     const deleteCommentUseCase = new DeleteCommentUseCase({
@@ -33,7 +30,7 @@ describe('DeleteCommentUseCase', () => {
     await deleteCommentUseCase.execute(useCaseParams, userId);
 
     // Assert
-    expect(mockCommentRepository.verifyCommentExistance).toBeCalledWith(useCaseParams);
+    expect(mockCommentRepository.verifyCommentExistence).toBeCalledWith(useCaseParams);
     expect(mockCommentRepository.verifyCommentAccessibility)
       .toBeCalledWith({ commentId: 'comment-123', userId });
     expect(mockCommentRepository.deleteCommentById).toBeCalledWith('comment-123');

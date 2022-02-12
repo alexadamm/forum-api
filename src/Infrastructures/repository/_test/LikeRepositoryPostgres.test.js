@@ -51,13 +51,13 @@ describe('LikeRepositoryPostgres', () => {
     });
   });
 
-  describe('verifyLikeExistance function', () => {
+  describe('verifyLikeExistence function', () => {
     it('should return false when like doesn\'t exist', async () => {
       // Arrange
       const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, {});
 
       // Action and Assert
-      expect(await likeRepositoryPostgres.verifyLikeExistance({
+      expect(await likeRepositoryPostgres.verifyLikeExistence({
         commentId: 'comment-123',
         userId: 'user-123',
       })).toEqual(false);
@@ -72,7 +72,7 @@ describe('LikeRepositoryPostgres', () => {
       });
 
       // Action and Assert
-      expect(await likeRepositoryPostgres.verifyLikeExistance({
+      expect(await likeRepositoryPostgres.verifyLikeExistence({
         commentId: 'comment-123',
         userId: 'user-123',
       })).toEqual(true);

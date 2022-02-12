@@ -25,7 +25,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     return new CreatedComment({ ...result.rows[0] });
   }
 
-  async verifyCommentExistance({ commentId, threadId }) {
+  async verifyCommentExistence({ commentId, threadId }) {
     const query = {
       text: 'SELECT * FROM comments WHERE id = $1 AND thread_id = $2',
       values: [commentId, threadId],
@@ -72,9 +72,9 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [threadId],
     };
 
-    const results = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return results.rows
+    return rows
       .map((comment) => new CommentDetails({
         ...comment, replies: [], likeCount: 0, isDeleted: comment.is_deleted,
       }));

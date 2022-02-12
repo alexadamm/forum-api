@@ -8,7 +8,7 @@ class AddReplyUseCase {
 
   async execute(useCaseParams, useCasePayload, owner) {
     const { commentId } = useCaseParams;
-    await this._commentRepository.verifyCommentExistance(useCaseParams);
+    await this._commentRepository.verifyCommentExistence(useCaseParams);
     const createReply = new CreateReply({ ...useCasePayload, commentId, owner });
     return this._replyRepository.addReply(createReply);
   }

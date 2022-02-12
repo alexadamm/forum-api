@@ -15,11 +15,11 @@ class LikeRepositoryPostgres extends LikeRepository {
       text: 'INSERT INTO likes VALUES($1, $2, $3) RETURNING id',
       values: [id, commentId, userId],
     };
-    const result = await this._pool.query(query);
-    return result.rows[0];
+    const { rows } = await this._pool.query(query);
+    return rows[0];
   }
 
-  async verifyLikeExistance({ commentId, userId }) {
+  async verifyLikeExistence({ commentId, userId }) {
     const query = {
       text: 'SELECT * FROM likes WHERE comment_id = $1 AND owner = $2',
       values: [commentId, userId],
@@ -40,8 +40,8 @@ class LikeRepositoryPostgres extends LikeRepository {
           WHERE comment_id = $1`,
       values: [commentId],
     };
-    const result = await this._pool.query(query);
-    return result.rows;
+    const { rows } = await this._pool.query(query);
+    return rows;
   }
 
   async deleteLikeByCommentIdAndUserId({ commentId, userId }) {

@@ -137,19 +137,16 @@ describe('GetThreadUseCase', () => {
       const mockLikeRepository = new LikeRepository();
 
       /** mocking needed function */
-      mockThreadRepository.getThreadById = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedThreadDetails));
-      mockCommentRepository.getCommentsByThreadId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedComments));
-      mockReplyRepository.getRepliesByThreadId = jest.fn()
-        .mockImplementation(() => Promise.resolve(expectedReplies));
-      mockLikeRepository.getLikesByCommentId = jest.fn()
-        .mockImplementation((commentId) => Promise.resolve(commentId === 'comment-123' ? [
-          { username: 'dicoding' },
-          { username: 'johndoe' },
-          { username: 'richard' },
-          { username: 'robert' },
-        ] : []));
+      mockThreadRepository.getThreadById = jest.fn(() => Promise.resolve(expectedThreadDetails));
+      mockCommentRepository.getCommentsByThreadId = jest
+        .fn(() => Promise.resolve(expectedComments));
+      mockReplyRepository.getRepliesByThreadId = jest.fn(() => Promise.resolve(expectedReplies));
+      mockLikeRepository.getLikesByCommentId = jest.fn((commentId) => Promise.resolve(commentId === 'comment-123' ? [
+        { username: 'dicoding' },
+        { username: 'johndoe' },
+        { username: 'richard' },
+        { username: 'robert' },
+      ] : []));
 
       /** creating use case instance */
       const getThreadUseCase = new GetThreadUseCase({
@@ -158,12 +155,6 @@ describe('GetThreadUseCase', () => {
         replyRepository: mockReplyRepository,
         likeRepository: mockLikeRepository,
       });
-
-      /** spy needed private function */
-      const SpyReformatDeletedComments = jest.spyOn(getThreadUseCase, '_reformatDeletedComments');
-      const SpyReformatDeletedReplies = jest.spyOn(getThreadUseCase, '_reformatDeletedReplies');
-      const SpyPutRepliesToComments = jest.spyOn(getThreadUseCase, '_putRepliesToComments');
-      const SpyPutLikeCountToComments = jest.spyOn(getThreadUseCase, '_putLikeCountToComments');
 
       // Action
       const threadDetails = await getThreadUseCase.execute(useCaseParams);
@@ -174,10 +165,6 @@ describe('GetThreadUseCase', () => {
       expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(useCaseParams.threadId);
       expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(useCaseParams.threadId);
       expect(mockLikeRepository.getLikesByCommentId).toBeCalledTimes(3);
-      expect(SpyReformatDeletedComments).toHaveBeenCalledWith(expectedComments);
-      expect(SpyReformatDeletedReplies).toHaveBeenCalledWith(expectedReplies);
-      expect(SpyPutRepliesToComments).toHaveBeenCalled();
-      expect(SpyPutLikeCountToComments).toHaveBeenCalled();
     });
   });
 });

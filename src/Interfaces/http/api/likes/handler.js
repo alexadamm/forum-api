@@ -7,15 +7,13 @@ class LikesHandler {
     this.putLikeHandler = this.putLikeHandler.bind(this);
   }
 
-  async putLikeHandler(request, h) {
+  async putLikeHandler(request) {
     const addDeleteLikeUseCase = this._container.getInstance(AddDeleteLikeUseCase.name);
     await addDeleteLikeUseCase.execute(request.params, request.auth.credentials.id);
 
-    const response = h.response({
+    return {
       status: 'success',
-    });
-    response.code(200);
-    return response;
+    };
   }
 }
 

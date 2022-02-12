@@ -8,11 +8,11 @@ class AddDeleteLikeUseCase {
 
   async execute(useCaseParams, userId) {
     const { commentId } = useCaseParams;
-    await this._commentRepository.verifyCommentExistance(useCaseParams);
-    const likeExistance = await this._likeRepository.verifyLikeExistance({ commentId, userId });
+    await this._commentRepository.verifyCommentExistence(useCaseParams);
+    const likeExistence = await this._likeRepository.verifyLikeExistence({ commentId, userId });
     const likeAct = new LikeAct({ userId, commentId });
 
-    if (likeExistance) {
+    if (likeExistence) {
       await this._likeRepository.deleteLikeByCommentIdAndUserId(likeAct);
     } else {
       await this._likeRepository.addLike(likeAct);

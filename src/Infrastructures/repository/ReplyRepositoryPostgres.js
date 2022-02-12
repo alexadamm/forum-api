@@ -25,7 +25,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     return new CreatedReply({ ...result.rows[0] });
   }
 
-  async verifyReplyExistance({ replyId, commentId, threadId }) {
+  async verifyReplyExistence({ replyId, commentId, threadId }) {
     const query = {
       text: `SELECT replies.*
       FROM replies INNER JOIN comments
@@ -81,9 +81,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [threadId],
     };
 
-    const results = await this._pool.query(query);
+    const { rows } = await this._pool.query(query);
 
-    return results.rows.map((reply) => new ReplyDetails({
+    return rows.map((reply) => new ReplyDetails({
       ...reply, commentId: reply.comment_id, isDeleted: reply.is_deleted,
     }));
   }

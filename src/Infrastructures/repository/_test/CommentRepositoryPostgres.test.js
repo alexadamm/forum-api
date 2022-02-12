@@ -66,13 +66,13 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('verifyCommentExistance function', () => {
+  describe('verifyCommentExistence function', () => {
     it('should throw NotFoundError when comment does not exist', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentExistance({
+      await expect(commentRepositoryPostgres.verifyCommentExistence({
         commentId: 'comment-123',
         threadId: 'thread-123',
       })).rejects.toThrowError(NotFoundError);
@@ -84,7 +84,7 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.addComment({ id: 'comment-123' });
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentExistance({
+      await expect(commentRepositoryPostgres.verifyCommentExistence({
         commentId: 'comment-123',
         threadId: 'thread-123',
       })).resolves.not.toThrowError(NotFoundError);

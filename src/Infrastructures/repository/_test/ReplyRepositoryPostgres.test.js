@@ -69,13 +69,13 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
-  describe('verifyReplyExistance function', () => {
+  describe('verifyReplyExistence function', () => {
     it('should throw NotFoundError when reply does not exist', async () => {
       // Arrange
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.verifyReplyExistance({
+      await expect(replyRepositoryPostgres.verifyReplyExistence({
         replyId: 'reply-123',
         commentId: 'comment-123',
         threadId: 'thread-123',
@@ -88,7 +88,7 @@ describe('ReplyRepositoryPostgres', () => {
       await RepliesTableTestHelper.addReply({ id: 'reply-123' });
 
       // Action & Assert
-      await expect(replyRepositoryPostgres.verifyReplyExistance({
+      await expect(replyRepositoryPostgres.verifyReplyExistence({
         replyId: 'reply-123',
         commentId: 'comment-123',
         threadId: 'thread-123',

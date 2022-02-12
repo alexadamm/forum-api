@@ -20,12 +20,9 @@ describe('AddDeleteLikeUseCase', () => {
     const mockCommentRepository = new CommentRepository();
 
     /** mocking needed function */
-    mockCommentRepository.verifyCommentExistance = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockLikeRepository.verifyLikeExistance = jest.fn()
-      .mockImplementation(() => Promise.resolve(false));
-    mockLikeRepository.addLike = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockCommentRepository.verifyCommentExistence = jest.fn(() => Promise.resolve());
+    mockLikeRepository.verifyLikeExistence = jest.fn(() => Promise.resolve(false));
+    mockLikeRepository.addLike = jest.fn(() => Promise.resolve());
 
     /** creating use case instance */
     const addDeleteLikeUseCase = new AddDeleteLikeUseCase({
@@ -37,8 +34,8 @@ describe('AddDeleteLikeUseCase', () => {
     await addDeleteLikeUseCase.execute(useCaseParams, userId);
 
     // Assert
-    expect(mockCommentRepository.verifyCommentExistance).toBeCalledWith(useCaseParams);
-    expect(mockLikeRepository.verifyLikeExistance).toBeCalledWith({
+    expect(mockCommentRepository.verifyCommentExistence).toBeCalledWith(useCaseParams);
+    expect(mockLikeRepository.verifyLikeExistence).toBeCalledWith({
       commentId: useCaseParams.commentId, userId,
     });
     expect(mockLikeRepository.addLike).toBeCalledWith({
@@ -60,12 +57,9 @@ describe('AddDeleteLikeUseCase', () => {
     const mockCommentRepository = new CommentRepository();
 
     /** mocking needed function */
-    mockCommentRepository.verifyCommentExistance = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockLikeRepository.verifyLikeExistance = jest.fn()
-      .mockImplementation(() => Promise.resolve(true));
-    mockLikeRepository.deleteLikeByCommentIdAndUserId = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockCommentRepository.verifyCommentExistence = jest.fn(() => Promise.resolve());
+    mockLikeRepository.verifyLikeExistence = jest.fn(() => Promise.resolve(true));
+    mockLikeRepository.deleteLikeByCommentIdAndUserId = jest.fn(() => Promise.resolve());
 
     /** creating use case instance */
     const addDeleteLikeUseCase = new AddDeleteLikeUseCase({
@@ -77,8 +71,8 @@ describe('AddDeleteLikeUseCase', () => {
     await addDeleteLikeUseCase.execute(useCaseParams, userId);
 
     // Assert
-    expect(mockCommentRepository.verifyCommentExistance).toBeCalledWith(useCaseParams);
-    expect(mockLikeRepository.verifyLikeExistance).toBeCalledWith({
+    expect(mockCommentRepository.verifyCommentExistence).toBeCalledWith(useCaseParams);
+    expect(mockLikeRepository.verifyLikeExistence).toBeCalledWith({
       commentId: useCaseParams.commentId, userId,
     });
     expect(mockLikeRepository.deleteLikeByCommentIdAndUserId).toBeCalledWith({
