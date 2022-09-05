@@ -1,5 +1,6 @@
 {
   "name": "forum-api",
+  "author": "Alexander Adam Mukhaer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,7 +14,6 @@
     "migrate:test": "node-pg-migrate -f config/database/test.json"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "@hapi/hapi": "^20.2.1",
