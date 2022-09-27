@@ -20,8 +20,8 @@ forum-api/                  → Project's root.
 │  ├─ Infrastructures/      → External agent, such as Framework and External Tools.
 │  │  ├─ database/          → Database driver.
 │  │  ├─ http/              → HTTP Server that use Hapi.js.
-│  │  ├─ repositories/      → Objek concrete/implementation of domains repository.
-│  │  ├─ security/          → Objek concrete/implementation of security helper.
+│  │  ├─ repositories/      → Object concrete/implementation of domains repository.
+│  │  ├─ security/          → Object concrete/implementation of security helper.
 │  │  ├─ container.js       → Container of all of instances of application services.
 │  ├─ Interfaces/           → Interface Adapter, where the routes configuration and handler define using Hapi Plugin.
 │  ├─ app.js                → Entry point of the application.
@@ -41,7 +41,7 @@ Install [Node.js and npm](https://nodejs.org/en/download/).
 
 Install [PostgreSQL](https://www.postgresql.org/download/).
 
-Set up the database and the development environment.
+Set up the [database](https://github.com/alexadamm/forum-api#database-configuration) and the [development environment](https://github.com/alexadamm/forum-api#development-environment).
 
 ### Step 2: Install dependencies
 
@@ -82,12 +82,12 @@ PGPORT              → Port of postgresql server.
 # POSTGRES TEST
 PGHOST_TEST         → Hostname of postgresql test server.
 PGUSER_TEST         → Username of postgresql test database admin.
-PGDATABASE_TEST     → Name of postgresql test database
+PGDATABASE_TEST     → Name of postgresql test database.
 PGPASSWORD_TEST     → Password of postgresql test database admin.
 PGPORT_TEST         → Port of postgresql test server.
 
 # TOKENIZE
-ACCESS_TOKEN_KEY    → Access token key for JWT authentication.
-REFRESH_TOKEN_KEY   → Refresh token key for JWT authentication.
-ACCCESS_TOKEN_AGE   → Access token age (seconds) for JWT authentication.
+ACCESS_TOKEN_KEY    → Secret token key for access token on authentication.
+REFRESH_TOKEN_KEY   → Secret token key Refresh token on authentication.
+ACCCESS_TOKEN_AGE   → Access token age (seconds) on authentication.
 ```
